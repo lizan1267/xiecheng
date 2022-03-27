@@ -1,0 +1,36 @@
+import * as React from 'react';
+import styles from './SideMenu.module.css';
+import { sideMenuList } from './mockup';
+import { Menu } from 'antd';
+import { GifOutlined } from '@ant-design/icons';
+
+interface ISideMenuProps {
+}
+
+export const SideMenu: React.FunctionComponent<ISideMenuProps> = (props) => {
+  return <Menu mode="vertical" className={styles['side-menu']}>
+      {/* 三层嵌套菜单 */}
+    {sideMenuList.map((m,index)=>
+        <Menu.SubMenu
+            key={`side-menu-${index}`}
+            title={<span><GifOutlined /> {m.title}</span>}
+        >
+            {m.subMenu.map((sm,smindex)=>
+                <Menu.SubMenu
+                    key={`sub-menu-${smindex}`}
+                    title={<span><GifOutlined /> {m.title}</span>}
+                >
+                    {sm.subMenu.map((sms,smsindex)=>
+                        <Menu.Item
+                            key={`sub-sub-menu-${smsindex}`}
+                        >
+                            <span><GifOutlined/> {sms}</span>
+                        </Menu.Item>
+                    )}
+                </Menu.SubMenu>
+            )}
+        </Menu.SubMenu>
+    )}
+  </Menu>;
+};
+
