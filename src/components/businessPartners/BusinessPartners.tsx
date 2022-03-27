@@ -17,7 +17,7 @@ const companies=[
 interface IBusinessPartnersProps {
 }
 
-const BusinessPartners: React.FunctionComponent<IBusinessPartnersProps> = (props) => {
+export const BusinessPartners: React.FunctionComponent<IBusinessPartnersProps> = (props) => {
   return <div className={styles.content}>
         <Divider orientation='left'>
             <Typography.Title level={3}>合作企业</Typography.Title>
@@ -35,4 +35,3 @@ const BusinessPartners: React.FunctionComponent<IBusinessPartnersProps> = (props
   </div>;
 };
 
-export default BusinessPartners;

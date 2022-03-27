@@ -1,58 +1,23 @@
-import { Col, Row, Typography } from 'antd';
 import React from 'react';
 import styles from './App.module.css';
-import { Header, Footer, Carousel, SideMenu, ProductCollection } from './components';
-import { productList1, productList2, productList3} from './mockup';
+import { HomePage, SignInPage, RegisterPage, DetailPage } from './pages';
+import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
+import { Result } from 'antd';
 
-import sideImage from './assets/images/sider_2019_12-09.png';
-import sideImage2 from './assets/images/sider_2019_02-04.png';
-import sideImage3 from './assets/images/sider_2019_02-04-2.png';
-import BusinessPartners from './components/businessPartners/BusinessPartners';
 
 function App() {
   return (
     <div className={styles.App}>
-      <Header />
-      {/* 页面内容 content */}
-      <div className={styles['page-content']}>
-        <Row style={{marginTop:20}}>
-          <Col span={6}>
-            <SideMenu />
-          </Col>
-          <Col span={18}>
-            <Carousel />
-          </Col>
-        </Row>
-        <ProductCollection
-          title={
-            <Typography.Title level={3} type="warning">
-              爆款推荐
-            </Typography.Title>
-          }
-          sideImage={sideImage}
-          products={productList1}
-        />
-        <ProductCollection
-          title={
-            <Typography.Title level={3} type="danger">
-              新品上市
-            </Typography.Title>
-          }
-          sideImage={sideImage2}
-          products={productList2}
-        />
-        <ProductCollection
-          title={
-            <Typography.Title level={3} type="success">
-              国内游推荐
-            </Typography.Title>
-          }
-          sideImage={sideImage3}
-          products={productList3}
-        />
-        <BusinessPartners />
-      </div>
-      <Footer />
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/" component={HomePage} />
+          <Route path="/signIn" component={SignInPage} />
+          <Route path="/register" component={RegisterPage} />
+          <Route path="/detail/:touristRouteId" component={DetailPage} />
+          <Route render={()=><Result status="404" title="404" subTitle="Sorry, the page you visited does not exist." extra={<Link to="/">Back Home</Link>} /> } />
+        </Switch>
+        
+      </BrowserRouter>
     </div>
   );
 }
