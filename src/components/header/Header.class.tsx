@@ -3,41 +3,55 @@ import styles from './Header.module.css';
 import logo from '../../assets/logo.svg';
 import { Layout, Typography, Input, Dropdown, Menu, Button} from 'antd';
 import { GlobalOutlined } from '@ant-design/icons';
-import { useHistory,useLocation,useParams,useRouteMatch} from 'react-router-dom';
-import { useSelector } from '../../redux/hooks';
-import { useDispatch } from 'react-redux';
+import { withRouter,RouteComponentProps } from 'react-router-dom';
+import {RootState } from '../../redux/store';
+import { withTranslation,WithTranslation } from 'react-i18next';
+import { changeLanguageActionCreator,addLanguageActionCreator} from '../../redux/language/languageActions';
+import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { LanguageActionTypes,addLanguageActionCreator,changeLanguageActionCreator } from '../../redux/language/languageActions';
-import { useTranslation } from 'react-i18next';
-
-// useSelector可以帮助我们从store中连接state的数据
 
 
-interface IHeaderProps {
+const mapStateToProps = (state:RootState) => {
+  return {
+    language:state.language.language,
+    languageList:state.language.languageList
+  }
 }
 
-export const Header: React.FC<IHeaderProps> = (props) => {
-  const history=useHistory();
-  const location=useLocation();
-  const params=useParams();
-  const match=useRouteMatch();
-  const language=useSelector((state)=>state.language.language);
-  const languageList=useSelector((state)=>state.language.languageList);
-  const dispatch=useDispatch();
-  const { t }=useTranslation();
+const mapDispatchToProps = (dispatch:Dispatch) => {
+  return {
+    changeLanguage:(code:"zh"|"en")=>{
+      const action=changeLanguageActionCreator(code);
+      dispatch(action);
+    },
+    addLanguage:(name:string,code:string)=>{
+      const action=addLanguageActionCreator(name,code);
+      dispatch(action);
+    }
+  }
+}
+
+type PropsType=RouteComponentProps //路由props类型
+                & WithTranslation  //i18n props类型
+                &ReturnType<typeof mapStateToProps> //redux store 映射类型
+                &ReturnType<typeof mapDispatchToProps> ;
+                             
+class HeaderComponent extends React.Component<PropsType>{
 
   //单击切换语言
-  const menuClickHandler=(e)=>{
+  menuClickHandler=(e)=>{
     // console.log(e);
     if(e.key==="new"){
       //处理新语言添加action
-      dispatch(addLanguageActionCreator("新语言","new_lang"));
+      this.props.addLanguage("新语言","new_lang")
     }else{
-      dispatch(changeLanguageActionCreator(e.key));
+      this.props.changeLanguage(e.key);
     }
   }
 
-  return <>
+  render(){
+    const { history,t }=this.props;
+    return (
         <div className={styles['app-header']}>
         {/* header上边那部分 */}
         <div className={styles['top-header']}>
@@ -46,8 +60,8 @@ export const Header: React.FC<IHeaderProps> = (props) => {
             <Dropdown.Button 
               style={{marginLeft:15}} 
               overlay={
-                <Menu onClick={menuClickHandler}>
-                  {languageList.map(l=>{
+                <Menu onClick={this.menuClickHandler}>
+                  {this.props.languageList.map(l=>{
                     return <Menu.Item key={l.code}>{l.name}</Menu.Item>
                   })}
                   <Menu.Item key={"new"}>{t("header.add_new_language")}</Menu.Item>
@@ -55,7 +69,7 @@ export const Header: React.FC<IHeaderProps> = (props) => {
               }
               icon={<GlobalOutlined/>}
             >
-              {language==="zh" ? "中文" : "English"}
+              {this.props.language==="zh" ? "中文" : "English"}
             </Dropdown.Button>
             <Button.Group className={styles['button-group']}>
               <Button onClick={()=>history.push("register")}>{t("header.register")}</Button>
@@ -91,8 +105,13 @@ export const Header: React.FC<IHeaderProps> = (props) => {
             <Menu.Item key="16"> {t("header.insurance")} </Menu.Item>
         </Menu>
       </div>
-    </>;
+    );
+  }
+  
 };
 
+
+
+export const Header=connect(mapStateToProps,mapDispatchToProps)(withTranslation()(withRouter(HeaderComponent)));
 
 
